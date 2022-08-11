@@ -366,6 +366,7 @@ public class WatsonWsServer : IDisposable
         return task;
     }
 
+    /*
     /// <summary>
     ///     Send binary data to the specified client, asynchronously.
     /// </summary>
@@ -374,6 +375,17 @@ public class WatsonWsServer : IDisposable
     /// <param name="token">Cancellation token allowing for termination of this request.</param>
     /// <returns>Task with Boolean indicating if the message was sent successfully.</returns>
     public Task<bool> SendAsync(Guid id, byte[] data, CancellationToken token = default) => SendAsync(id, new ArraySegment<byte>(data), WebSocketMessageType.Binary, token);
+*/
+
+    /// <summary>
+    ///     Send binary data to the specified client, asynchronously.
+    /// </summary>
+    /// <param name="id">IP:port of the recipient client.</param>
+    /// <param name="data">Byte array containing data.</param>
+    /// <param name="token">Cancellation token allowing for termination of this request.</param>
+    /// <returns>Task with Boolean indicating if the message was sent successfully.</returns>
+    public Task<bool> SendAsync(Guid id, ReadOnlyMemory<byte> data, CancellationToken token = default) => SendAsync(id, data, WebSocketMessageType.Binary, token);
+
 
     /// <summary>
     ///     Send binary data to the specified client, asynchronously.
@@ -384,6 +396,35 @@ public class WatsonWsServer : IDisposable
     /// <param name="token">Cancellation token allowing for termination of this request.</param>
     /// <returns>Task with Boolean indicating if the message was sent successfully.</returns>
     public Task<bool> SendAsync(Guid id, byte[] data, WebSocketMessageType msgType, CancellationToken token = default) => SendAsync(id, new ArraySegment<byte>(data), msgType, token);
+
+
+    /// <summary>
+    ///     Send binary data to the specified client, asynchronously.
+    /// </summary>
+    /// <param name="id">Id of the recipient client.</param>
+    /// <param name="data">ArraySegment containing data.</param>
+    /// <param name="msgType">Web socket message type.</param>
+    /// <param name="token">Cancellation token allowing for termination of this request.</param>
+    /// <returns>Task with Boolean indicating if the message was sent successfully.</returns>
+    public Task<bool> SendAsync(Guid id, ReadOnlyMemory<byte> data, WebSocketMessageType msgType = WebSocketMessageType.Binary, CancellationToken token = default)
+    {
+        if (data.IsEmpty || data.Length < 1)
+        {
+            return Task.FromResult(false);
+        }
+
+        if (!_Clients.TryGetValue(id, out var client))
+        {
+            Logger?.Invoke(_Header + "unable to find client " + id);
+            return Task.FromResult(false);
+        }
+
+        var task = MessageWriteAsync(client, data, msgType, token);
+
+        client = null;
+        return task;
+    }
+
 
     /// <summary>
     ///     Send binary data to the specified client, asynchronously.
@@ -702,6 +743,108 @@ public class WatsonWsServer : IDisposable
         }
     }
 
+
+    private async Task<bool> MessageWriteAsync(ClientMetadata md, ReadOnlyMemory<byte> data, WebSocketMessageType msgType, CancellationToken token)
+    {
+        var header = "[WatsonWsServer " + md.Id + "] ";
+
+        var tokens = new CancellationToken[3];
+        tokens[0] = _Token;
+        tokens[1] = token;
+        tokens[2] = md.TokenSource.Token;
+
+        using (var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(tokens))
+        {
+            try
+            {
+            #region Send-Message
+
+                await md.SendLock.WaitAsync(md.TokenSource.Token).ConfigureAwait(false);
+
+                try
+                {
+                    await md.Ws.SendAsync(data, msgType, true, linkedCts.Token).ConfigureAwait(false);
+                }
+                finally
+                {
+                    md.SendLock.Release();
+                }
+
+                if (EnableStatistics)
+                {
+                    Stats.IncrementSentMessages();
+                    Stats.AddSentBytes(data.Length);
+                }
+
+                return true;
+
+            #endregion
+            }
+            catch (TaskCanceledException)
+            {
+                if (_Token.IsCancellationRequested)
+                {
+                    Logger?.Invoke(header + "server canceled");
+                }
+                else if (token.IsCancellationRequested)
+                {
+                    Logger?.Invoke(header + "message send canceled");
+                }
+                else if (md.TokenSource.Token.IsCancellationRequested)
+                {
+                    Logger?.Invoke(header + "client canceled");
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                if (_Token.IsCancellationRequested)
+                {
+                    Logger?.Invoke(header + "canceled");
+                }
+                else if (token.IsCancellationRequested)
+                {
+                    Logger?.Invoke(header + "message send canceled");
+                }
+                else if (md.TokenSource.Token.IsCancellationRequested)
+                {
+                    Logger?.Invoke(header + "client canceled");
+                }
+            }
+            catch (ObjectDisposedException)
+            {
+                Logger?.Invoke(header + "disposed");
+            }
+            catch (WebSocketException)
+            {
+                Logger?.Invoke(header + "websocket disconnected");
+            }
+            catch (SocketException)
+            {
+                Logger?.Invoke(header + "socket disconnected");
+            }
+            catch (InvalidOperationException)
+            {
+                Logger?.Invoke(header + "disconnected due to invalid operation");
+            }
+            catch (IOException)
+            {
+                Logger?.Invoke(header + "IO disconnected");
+            }
+            catch (Exception e)
+            {
+                Logger?.Invoke(header + "exception: " + Environment.NewLine + e);
+            }
+            finally
+            {
+                md = null;
+                tokens = null;
+            }
+        }
+
+        return false;
+    }
+
+/*
     private async Task<bool> MessageWriteAsync(ClientMetadata md, ArraySegment<byte> data, WebSocketMessageType msgType, CancellationToken token)
     {
         var header = "[WatsonWsServer " + md.Id + "] ";
@@ -801,6 +944,7 @@ public class WatsonWsServer : IDisposable
 
         return false;
     }
+    */
 
 #endregion
 }
