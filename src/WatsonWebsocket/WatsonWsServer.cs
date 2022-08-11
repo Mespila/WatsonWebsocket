@@ -429,9 +429,9 @@ public class WatsonWsServer : IDisposable
     ///     Forcefully disconnect a client.
     /// </summary>
     /// <param name="id">Id of the client</param>
-    public void DisconnectClient(Guid id)
+    public Task DisconnectClientAsync(Guid id)
     {
-        if (_Clients.TryGetValue(id, out var client))
+        if (_Clients.TryRemove(id, out var client))
         {
             lock (client)
             {
@@ -441,6 +441,8 @@ public class WatsonWsServer : IDisposable
                 client.Ws.Dispose();
             }
         }
+
+        return Task.CompletedTask;
     }
 
     /// <summary>
