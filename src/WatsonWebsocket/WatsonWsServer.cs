@@ -44,22 +44,24 @@ public class WatsonWsServer : IDisposable
     /// <summary>
     ///     Event fired when a client connects.
     /// </summary>
-    public event EventHandler<ClientConnectedEventArgs> ClientConnected;
+    public AsyncEvent<ClientConnectedEventArgs> ClientConnected;
+
 
     /// <summary>
     ///     Event fired when a client disconnects.
     /// </summary>
-    public event EventHandler<ClientDisconnectedEventArgs> ClientDisconnected;
+    public AsyncEvent<ClientDisconnectedEventArgs> ClientDisconnected;
+
 
     /// <summary>
     ///     Event fired when the server stops.
     /// </summary>
-    public event EventHandler ServerStopped;
+    public AsyncEvent<EventArgs> ServerStopped;
 
     /// <summary>
     ///     Event fired when a message is received.
     /// </summary>
-    public event EventHandler<MessageReceivedEventArgs> MessageReceived;
+    public AsyncEvent<MessageReceivedEventArgs> MessageReceived;
 
     /// <summary>
     ///     Indicate whether or not invalid or otherwise unverifiable certificates should be accepted.  Default is true.
@@ -562,7 +564,11 @@ public class WatsonWsServer : IDisposable
 
                         _Clients.TryAdd(md.Id, md);
 
-                        ClientConnected?.Invoke(this, new ClientConnectedEventArgs(md.Id, ctx.Request));
+                        if (ClientConnected is not null)
+                        {
+                            await ClientConnected.InvokeAsync(this, new ClientConnectedEventArgs(md.Id, ctx.Request));
+                        }
+
                         await Task.Run(() => DataReceiver(md), token);
                     }, token);
                 }, _Token).ConfigureAwait(false);
@@ -592,7 +598,7 @@ public class WatsonWsServer : IDisposable
         }
         finally
         {
-            ServerStopped?.Invoke(this, EventArgs.Empty);
+            ServerStopped?.InvokeAsync(this, EventArgs.Empty);
         }
     }
 
@@ -618,11 +624,11 @@ public class WatsonWsServer : IDisposable
 
                     if (msg.Data != null)
                     {
-                        var unawaited = Task.Run(() => MessageReceived?.Invoke(this, msg), md.TokenSource.Token);
+                        _ = Task.Run(() => MessageReceived?.InvokeAsync(this, msg), md.TokenSource.Token);
                     }
                     else
                     {
-                        await Task.Delay(10).ConfigureAwait(false);
+                        await Task.Delay(10, _Token).ConfigureAwait(false);
                     }
                 }
             }
@@ -645,7 +651,7 @@ public class WatsonWsServer : IDisposable
         }
         finally
         {
-            ClientDisconnected?.Invoke(this, new ClientDisconnectedEventArgs(md.Id));
+            ClientDisconnected?.InvokeAsync(this, new ClientDisconnectedEventArgs(md.Id));
             md.Ws.Dispose();
             Logger?.Invoke(header + "disconnected");
             _Clients.TryRemove(md.Id, out _);
