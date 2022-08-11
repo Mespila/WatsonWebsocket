@@ -112,58 +112,58 @@
         </member>
         <member name="T:WatsonWebsocket.WatsonWsClient">
             <summary>
-            Watson websocket client.
+                Watson websocket client.
             </summary>
         </member>
         <member name="P:WatsonWebsocket.WatsonWsClient.AcceptInvalidCertificates">
             <summary>
-            Indicate whether or not invalid or otherwise unverifiable certificates should be accepted.  Default is true.
+                Indicate whether or not invalid or otherwise unverifiable certificates should be accepted.  Default is true.
             </summary>
         </member>
         <member name="P:WatsonWebsocket.WatsonWsClient.Connected">
             <summary>
-            Indicates whether or not the client is connected to the server.
+                Indicates whether or not the client is connected to the server.
             </summary>
         </member>
         <member name="P:WatsonWebsocket.WatsonWsClient.EnableStatistics">
             <summary>
-            Enable or disable statistics.
+                Enable or disable statistics.
             </summary>
         </member>
         <member name="P:WatsonWebsocket.WatsonWsClient.KeepAliveInterval">
             <summary>
-            Set KeepAlive to Connection Options.
+                Set KeepAlive to Connection Options.
             </summary>
         </member>
         <member name="E:WatsonWebsocket.WatsonWsClient.MessageReceived">
             <summary>
-            Event fired when a message is received.
+                Event fired when a message is received.
             </summary>
         </member>
         <member name="E:WatsonWebsocket.WatsonWsClient.ServerConnected">
             <summary>
-            Event fired when the client connects successfully to the server. 
+                Event fired when the client connects successfully to the server.
             </summary>
         </member>
         <member name="E:WatsonWebsocket.WatsonWsClient.ServerDisconnected">
             <summary>
-            Event fired when the client disconnects from the server.
+                Event fired when the client disconnects from the server.
             </summary>
         </member>
         <member name="F:WatsonWebsocket.WatsonWsClient.Logger">
             <summary>
-            Method to invoke when sending a log message.
+                Method to invoke when sending a log message.
             </summary>
         </member>
         <member name="P:WatsonWebsocket.WatsonWsClient.Stats">
             <summary>
-            Statistics.
+                Statistics.
             </summary>
         </member>
         <member name="M:WatsonWebsocket.WatsonWsClient.#ctor(System.String,System.Int32,System.Boolean)">
             <summary>
-            Initializes the Watson websocket client.
-            Be sure to call 'Start()' to start the client and connect to the server.
+                Initializes the Watson websocket client.
+                Be sure to call 'Start()' to start the client and connect to the server.
             </summary>
             <param name="serverIp">IP address of the server.</param>
             <param name="serverPort">TCP port of the server.</param>
@@ -171,41 +171,41 @@
         </member>
         <member name="M:WatsonWebsocket.WatsonWsClient.#ctor(System.Uri)">
             <summary>
-            Initializes the Watson websocket client.
-            Be sure to call 'Start()' to start the client and connect to the server.
+                Initializes the Watson websocket client.
+                Be sure to call 'Start()' to start the client and connect to the server.
             </summary>
-            <param name="uri">The URI of the server endpoint.</param> 
+            <param name="uri">The URI of the server endpoint.</param>
         </member>
         <member name="M:WatsonWebsocket.WatsonWsClient.Dispose">
             <summary>
-            Tear down the client and dispose of background workers.
+                Tear down the client and dispose of background workers.
             </summary>
         </member>
         <member name="M:WatsonWebsocket.WatsonWsClient.ConfigureOptions(System.Action{System.Net.WebSockets.ClientWebSocketOptions})">
             <summary>
-            Pre-configure websocket client options prior to connecting to the server.
+                Pre-configure websocket client options prior to connecting to the server.
             </summary>
             <returns>WatsonWsClient.</returns>
         </member>
         <member name="M:WatsonWebsocket.WatsonWsClient.AddCookie(System.Net.Cookie)">
             <summary>
-            Add a cookie prior to connecting to the server.
+                Add a cookie prior to connecting to the server.
             </summary>
         </member>
         <member name="M:WatsonWebsocket.WatsonWsClient.Start">
             <summary>
-            Start the client and connect to the server.
+                Start the client and connect to the server.
             </summary>
         </member>
         <member name="M:WatsonWebsocket.WatsonWsClient.StartAsync">
             <summary>
-            Start the client and connect to the server.
+                Start the client and connect to the server.
             </summary>
             <returns>Task.</returns>
         </member>
         <member name="M:WatsonWebsocket.WatsonWsClient.StartWithTimeout(System.Int32,System.Threading.CancellationToken)">
             <summary>
-            Start the client and attempt to connect to the server until the timeout is reached.
+                Start the client and attempt to connect to the server until the timeout is reached.
             </summary>
             <param name="timeout">Timeout in seconds.</param>
             <param name="token">Cancellation token to terminate connection attempts.</param>
@@ -213,7 +213,7 @@
         </member>
         <member name="M:WatsonWebsocket.WatsonWsClient.StartWithTimeoutAsync(System.Int32,System.Threading.CancellationToken)">
             <summary>
-            Start the client and attempt to connect to the server until the timeout is reached.
+                Start the client and attempt to connect to the server until the timeout is reached.
             </summary>
             <param name="timeout">Timeout in seconds.</param>
             <param name="token">Cancellation token to terminate connection attempts.</param>
@@ -221,31 +221,31 @@
         </member>
         <member name="M:WatsonWebsocket.WatsonWsClient.Stop">
             <summary>
-            Disconnect the client.
+                Disconnect the client.
             </summary>
         </member>
         <member name="M:WatsonWebsocket.WatsonWsClient.StopAsync">
             <summary>
-            Disconnect the client.
+                Disconnect the client.
             </summary>
         </member>
         <member name="M:WatsonWebsocket.WatsonWsClient.Stop(System.Net.WebSockets.WebSocketCloseStatus,System.String)">
             <summary>
-            Disconnect the client by code and reason.
+                Disconnect the client by code and reason.
             </summary>
             <param name="closeCode">Close code.</param>
             <param name="reason">Close by reason.</param>
         </member>
         <member name="M:WatsonWebsocket.WatsonWsClient.StopAsync(System.Net.WebSockets.WebSocketCloseStatus,System.String)">
             <summary>
-            Disconnect the client by code and reason.
+                Disconnect the client by code and reason.
             </summary>
             <param name="closeCode">Close code.</param>
             <param name="reason">Close by reason.</param>
         </member>
         <member name="M:WatsonWebsocket.WatsonWsClient.SendAsync(System.String,System.Net.WebSockets.WebSocketMessageType,System.Threading.CancellationToken)">
             <summary>
-            Send text data to the server asynchronously.
+                Send text data to the server asynchronously.
             </summary>
             <param name="data">String data.</param>
             <param name="msgType">Message type.</param>
@@ -254,7 +254,7 @@
         </member>
         <member name="M:WatsonWebsocket.WatsonWsClient.SendAsync(System.Byte[],System.Net.WebSockets.WebSocketMessageType,System.Threading.CancellationToken)">
             <summary>
-            Send binary data to the server asynchronously.
+                Send binary data to the server asynchronously.
             </summary>
             <param name="data">Byte array containing data.</param>
             <param name="msgType">Message type.</param>
@@ -263,7 +263,7 @@
         </member>
         <member name="M:WatsonWebsocket.WatsonWsClient.SendAsync(System.ArraySegment{System.Byte},System.Net.WebSockets.WebSocketMessageType,System.Threading.CancellationToken)">
             <summary>
-            Send binary data to the server asynchronously.
+                Send binary data to the server asynchronously.
             </summary>
             <param name="data">ArraySegment containing data.</param>
             <param name="msgType">Message type.</param>
@@ -272,7 +272,7 @@
         </member>
         <member name="M:WatsonWebsocket.WatsonWsClient.SendAndWaitAsync(System.String,System.Int32,System.Threading.CancellationToken)">
             <summary>
-            Send text data to the server and wait for a response.
+                Send text data to the server and wait for a response.
             </summary>
             <param name="data">String data.</param>
             <param name="timeout">Timeout, in seconds.</param>
@@ -281,7 +281,7 @@
         </member>
         <member name="M:WatsonWebsocket.WatsonWsClient.SendAndWaitAsync(System.Byte[],System.Int32,System.Threading.CancellationToken)">
             <summary>
-            Send binary data to the server and wait for a response.
+                Send binary data to the server and wait for a response.
             </summary>
             <param name="data">Byte array containing data.</param>
             <param name="timeout">Timeout, in seconds.</param>
@@ -290,7 +290,7 @@
         </member>
         <member name="M:WatsonWebsocket.WatsonWsClient.SendAndWaitAsync(System.ArraySegment{System.Byte},System.Int32,System.Threading.CancellationToken)">
             <summary>
-            Send binary data to the server and wait for a response.
+                Send binary data to the server and wait for a response.
             </summary>
             <param name="data">ArraySegment containing data.</param>
             <param name="timeout">Timeout, in seconds.</param>
@@ -299,7 +299,7 @@
         </member>
         <member name="M:WatsonWebsocket.WatsonWsClient.Dispose(System.Boolean)">
             <summary>
-            Tear down the client and dispose of background workers.
+                Tear down the client and dispose of background workers.
             </summary>
             <param name="disposing">Disposing.</param>
         </member>
