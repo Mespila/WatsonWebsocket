@@ -649,8 +649,7 @@ public class WatsonWsServer : IDisposable
     {
         var header = "[WatsonWsServer " + md.Id + "] ";
         Logger?.Invoke(header           + "starting data receiver");
-        var buffer = new byte[65536];
-
+        var buffer = new byte[8192];
         try
         {
             while (true)
